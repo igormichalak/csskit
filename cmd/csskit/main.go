@@ -20,7 +20,7 @@ func main() {
 	sourceFilepaths := flag.Args()
 
 	if len(sourceFilepaths) == 0 {
-		fmt.Println("please specify source files")
+		fmt.Println("please specify source files.")
 		os.Exit(1)
 	}
 
@@ -32,9 +32,9 @@ func main() {
 			validFilepaths = append(validFilepaths, fp)
 		default:
 			if len(ext) == 0 {
-				fmt.Println("file extensions are required")
+				fmt.Println("file extensions are required.")
 			} else {
-				fmt.Printf("unrecognized extension %q\n", ext)
+				fmt.Printf("unrecognized extension %q.\n", ext)
 			}
 			os.Exit(1)
 		}
@@ -47,9 +47,9 @@ func main() {
 		if err != nil {
 			var pathErr *fs.PathError
 			if errors.As(err, &pathErr) {
-				fmt.Printf("can't open file %q\n", pathErr.Path)
+				fmt.Printf("can't open file %q.\n", pathErr.Path)
 			} else {
-				fmt.Printf("unrecognized error: %s\n", err)
+				fmt.Printf("unrecognized error: %s.\n", err)
 			}
 			os.Exit(1)
 		}
@@ -66,7 +66,7 @@ func main() {
 		file.Close()
 
 		if err != nil {
-			fmt.Printf("unrecognized error: %s\n", err)
+			fmt.Printf("unrecognized error: %s.\n", err)
 			os.Exit(1)
 		}
 

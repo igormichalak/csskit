@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"io"
+	"unicode"
 )
 
 type peekIterator struct {
@@ -12,7 +13,7 @@ type peekIterator struct {
 }
 
 func newPeekIterator(rd *bufio.Reader) *peekIterator {
-	pit := &peekIterator{reader: rd}
+	pit := &peekIterator{reader: rd, peekC: unicode.ReplacementChar}
 	pit.next()
 	return pit
 }

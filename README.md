@@ -5,6 +5,8 @@ A tool for generating CSS utility classes.
 ## Missing features
 
 - Support for template expressions.
+- Support for script tags in HTML.
+- Ignoring HTML comments.
 
 Feel free to contribute.
 
