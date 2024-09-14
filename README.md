@@ -28,7 +28,7 @@ Supported extensions: `.js`, `.html`, `.gohtml`.
 letter    = 'a' ... 'z' .
 digit     = '0' ... '9' .
 keyword   = letter, { letter } .
-number    = digit, { digit } .
+number    = digit, { digit }, [ '.', digit, { digit } ] .
 className = keyword, { '-', keyword },
             [ '-', number, [ '%' ] ] .
 ```
