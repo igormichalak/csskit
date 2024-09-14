@@ -1,6 +1,6 @@
 # CSSKit (still WIP)
 
-A tool for generating CSS utility classes.
+A simple dependency-free tool for generating CSS utility classes.
 
 ## Missing features
 
