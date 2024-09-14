@@ -1,10 +1,10 @@
-package csskit
+package extract
 
 import (
 	"bufio"
+	"errors"
 	"io"
 	"strings"
-	"errors"
 )
 
 var classAttrStart = []rune("class=\"")
@@ -50,4 +50,3 @@ func FromHTML(rd io.Reader) ([]string, error) {
 		}
 	}
 }
-

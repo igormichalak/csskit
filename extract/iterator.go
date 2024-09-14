@@ -1,4 +1,4 @@
-package csskit
+package extract
 
 import (
 	"bufio"

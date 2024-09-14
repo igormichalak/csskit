@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/igormichalak/csskit"
+	"github.com/igormichalak/csskit/extract"
 )
 
 func main() {
@@ -58,9 +58,9 @@ func main() {
 
 		switch ext := filepath.Ext(fp); ext {
 		case ".js":
-			strs, err = csskit.FromJS(file)
+			strs, err = extract.FromJS(file)
 		case ".html", ".gohtml":
-			strs, err = csskit.FromHTML(file)
+			strs, err = extract.FromHTML(file)
 		}
 
 		file.Close()
@@ -77,4 +77,3 @@ func main() {
 		fmt.Printf("%q\n", str)
 	}
 }
-

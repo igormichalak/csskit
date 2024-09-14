@@ -1,4 +1,4 @@
-package csskit
+package extract
 
 import (
 	"bufio"
@@ -81,4 +81,3 @@ func FromJS(rd io.Reader) ([]string, error) {
 		}
 	}
 }
-
