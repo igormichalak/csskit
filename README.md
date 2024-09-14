@@ -25,7 +25,7 @@ Install CSSKit from source:
 go install github.com/igormichalak/csskit/cmd/csskit@latest
 ```
 
-If the `csskit` command doesn't work, make sure that the `$GOBIN` (or `$GOPATH/bin`) directory is added to your system PATH.
+If the `csskit` command can't be found, make sure that the `$GOBIN` (or `$GOPATH/bin`) directory is added to your system PATH.
 
 Here's how to find the location of the binary:
 ```bash
