@@ -14,6 +14,29 @@ But before you start working on a pull request
 for a feature that is not listed here, 
 please create a proposal first.
 
+## Installation
+
+Prerequisites:
+- [Go 1.23.1](https://go.dev/doc/install)
+
+Install CSSKit from source:
+
+```bash
+go install github.com/igormichalak/csskit/cmd/csskit@latest
+```
+
+If the `csskit` command doesn't work, make sure that the `$GOBIN` (or `$GOPATH/bin`) directory is added to your system PATH.
+
+Here's how to find the location of the binary:
+```bash
+go env GOBIN
+```
+```bash
+echo "$(go env GOPATH)/bin"
+```
+
+More info: https://go.dev/wiki/GOPATH
+
 ## Usage
 
 Only JavaScript, HTML and Go template files can be scanned for class names.
