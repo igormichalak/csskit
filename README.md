@@ -7,6 +7,7 @@ A simple, dependency-free tool for generating CSS utility classes.
 - Support for template expressions.
 - Support for script tags in HTML.
 - Ignoring HTML comments.
+- Tests.
 
 Feel free to contribute.
 
@@ -54,8 +55,10 @@ letter    = 'a' ... 'z' .
 digit     = '0' ... '9' .
 keyword   = letter, { letter } .
 number    = digit, { digit }, [ '.', digit, { digit } ] .
+unit      = 'px' | '%' | 'vw' | 'vh'
+          | 'deg' | 'rad' | 's' | 'ms' .
 className = keyword, { '-', keyword },
-            [ '-', number, [ '%' ] ] .
+            [ '-', number, [ unit ] ] .
 ```
 
 ## Compatibility
