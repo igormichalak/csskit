@@ -1,4 +1,4 @@
-# CSSKit
+# CSSKit (still WIP)
 
 A tool for generating CSS utility classes.
 
