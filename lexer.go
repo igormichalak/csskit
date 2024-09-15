@@ -31,19 +31,23 @@ type Lexer struct {
 func NewLexer(input string) *Lexer {
 	inputRunes := []rune(input)
 	l := &Lexer{input: inputRunes, inputLen: len(inputRunes)}
-	l.readChar()
-	l.readChar()
+	if l.inputLen > 0 {
+		l.currChar = l.input[0]
+	}
+	if l.inputLen > 1 {
+		l.peekChar = l.input[1]
+	}
 	return l
 }
 
 func (l *Lexer) readChar() {
 	l.currChar = l.peekChar
+	l.pos++
 	if l.pos+1 >= l.inputLen {
 		l.peekChar = 0
 	} else {
 		l.peekChar = l.input[l.pos+1]
 	}
-	l.pos++
 }
 
 func (l *Lexer) NextToken() Token {
@@ -72,6 +76,7 @@ func (l *Lexer) NextToken() Token {
 		case l.currChar == 0:
 			tok = Token{Type: TokenEOF, Value: ""}
 		default:
+			l.readChar()
 			l.adjacentTok = nil
 			continue
 		}
@@ -82,7 +87,8 @@ func (l *Lexer) NextToken() Token {
 }
 
 func (l *Lexer) readKeyword() string {
-	start := l.pos - 1
+	start := l.pos
+	l.readChar()
 	for isLowerLetter(l.currChar) {
 		l.readChar()
 	}
@@ -90,7 +96,8 @@ func (l *Lexer) readKeyword() string {
 }
 
 func (l *Lexer) readNumber() string {
-	start := l.pos - 1
+	start := l.pos
+	l.readChar()
 	for isDigit(l.currChar) {
 		l.readChar()
 	}
@@ -104,7 +111,8 @@ func (l *Lexer) readNumber() string {
 }
 
 func (l *Lexer) readUnit() string {
-	start := l.pos - 1
+	start := l.pos
+	l.readChar()
 	for isLowerLetter(l.currChar) {
 		l.readChar()
 	}
