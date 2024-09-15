@@ -70,6 +70,7 @@ func (l *Lexer) NextToken() Token {
 			l.readChar()
 		case unicode.IsSpace(l.currChar):
 			tok = Token{Type: TokenSpace, Value: " "}
+			l.readChar()
 			for unicode.IsSpace(l.currChar) {
 				l.readChar()
 			}
@@ -126,4 +127,3 @@ func isLowerLetter(c rune) bool {
 func isDigit(c rune) bool {
 	return '0' <= c && c <= '9'
 }
-

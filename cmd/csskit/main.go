@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/igormichalak/csskit"
 	"github.com/igormichalak/csskit/extract"
 )
 
@@ -74,7 +75,28 @@ func main() {
 	}
 
 	for _, str := range lexerInput {
-		fmt.Printf("%q\n", str)
+		fmt.Printf("%q -> ", str)
+
+		lex := csskit.NewLexer(str)
+		var tok csskit.Token
+
+		for tok.Type != csskit.TokenEOF {
+			tok = lex.NextToken()
+
+			switch tok.Type {
+			case csskit.TokenKeyword:
+				fmt.Printf("KEYWORD(%s) ", tok.Value)
+			case csskit.TokenNumber:
+				fmt.Printf("NUMBER(%s) ", tok.Value)
+			case csskit.TokenUnit:
+				fmt.Printf("UNIT(%s) ", tok.Value)
+			case csskit.TokenHyphen:
+				fmt.Printf("HYPHEN ")
+			case csskit.TokenSpace:
+				fmt.Printf("SPACE ")
+			case csskit.TokenEOF:
+				fmt.Printf("EOF\n")
+			}
+		}
 	}
 }
-
