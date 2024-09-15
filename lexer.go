@@ -11,6 +11,7 @@ const (
 	TokenUnit
 	TokenHyphen
 	TokenSpace
+	TokenGarbage
 	TokenEOF
 )
 
@@ -20,12 +21,12 @@ type Token struct {
 }
 
 type Lexer struct {
-	input       []rune
-	inputLen    int
-	pos         int
-	currChar    rune
-	peekChar    rune
-	adjacentTok *Token
+	input    []rune
+	inputLen int
+	pos      int
+	currChar rune
+	peekChar rune
+	prevTok  Token
 }
 
 func NewLexer(input string) *Lexer {
@@ -55,7 +56,7 @@ func (l *Lexer) NextToken() Token {
 	for {
 		switch {
 		case isLowerLetter(l.currChar):
-			if l.adjacentTok != nil && l.adjacentTok.Type == TokenNumber {
+			if l.prevTok.Type == TokenNumber {
 				tok.Value = l.readUnit()
 				tok.Type = TokenUnit
 			} else {
@@ -76,13 +77,15 @@ func (l *Lexer) NextToken() Token {
 			}
 		case l.currChar == 0:
 			tok = Token{Type: TokenEOF, Value: ""}
-		default:
+		case l.prevTok.Type == TokenGarbage:
 			l.readChar()
-			l.adjacentTok = nil
 			continue
+		default:
+			tok = Token{Type: TokenGarbage, Value: ""}
+			l.readChar()
 		}
 
-		l.adjacentTok = &tok
+		l.prevTok = tok
 		return tok
 	}
 }

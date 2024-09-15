@@ -94,6 +94,8 @@ func main() {
 				fmt.Printf("HYPHEN ")
 			case csskit.TokenSpace:
 				fmt.Printf("SPACE ")
+			case csskit.TokenGarbage:
+				fmt.Printf("GARBAGE ")
 			case csskit.TokenEOF:
 				fmt.Printf("EOF\n")
 			}
