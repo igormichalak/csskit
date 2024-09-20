@@ -1,5 +1,11 @@
 package csskit
 
+import (
+	"fmt"
+	"slices"
+	"strings"
+)
+
 type ValueType int
 
 const (
@@ -25,13 +31,6 @@ type CSSProperty struct {
 	Value    string
 }
 
-type ClassPattern struct {
-	Name     string
-	Matchers []TokenMatcher
-	UnitReq  bool
-	Generate func(tokens []Token) ([]CSSProperty, error)
-}
-
 type Parser struct {
 	lexer *Lexer
 }
@@ -54,9 +53,10 @@ func (p *Parser) Parse() ([]CSSClass, error) {
 			if len(tokens) > 0 {
 				if collecting && isValidLastToken(prevTok) {
 					class, err := p.parseClass(tokens)
-					if err == nil {
-						classes = append(classes, class)
+					if err != nil {
+						return nil, err
 					}
+					classes = append(classes, class)
 				}
 			}
 			break
@@ -121,7 +121,78 @@ func isValidLastToken(tok Token) bool {
 	}
 }
 
-func (p *Parser) parseClass(_ []Token) (CSSClass, error) {
-	return CSSClass{}, nil
+func (p *Parser) parseClass(tokens []Token) (CSSClass, error) {
+	for i := 0; i < classPatternsCount; i++ {
+		pattern := &classPatterns[i]
+		if !matchPattern(pattern, tokens) {
+			continue
+		}
+		name, err := joinTokens(tokens)
+		if err != nil {
+			return CSSClass{}, err
+		}
+		props, _ := pattern.Generate(tokens)
+		return CSSClass{Name: name, Props: props}, nil
+	}
+	return CSSClass{}, fmt.Errorf("no matching pattern for tokens: %v", tokens)
+}
+
+func joinTokens(tokens []Token) (string, error) {
+	var sb strings.Builder
+	for _, tok := range tokens {
+		if _, err := sb.WriteString(tok.Value); err != nil {
+			return "", err
+		}
+	}
+	return sb.String(), nil
+}
+
+func matchPattern(pattern *ClassPattern, tokens []Token) bool {
+	matcherCount := len(pattern.Matchers)
+	tokenCount := len(tokens)
+	lastMatcherType := pattern.Matchers[matcherCount-1].TokT
+	lastTokenType := tokens[tokenCount-1].Type
+
+	if pattern.UnitReq || lastMatcherType != TokenUnit {
+		if matcherCount != tokenCount {
+			return false
+		}
+	} else {
+		targetCount := -1
+		if lastTokenType == TokenUnit {
+			targetCount = matcherCount
+		} else {
+			targetCount = matcherCount-1
+		}
+		if targetCount != tokenCount {
+			return false
+		}
+	}
+
+	for matcherIdx, matcher := range pattern.Matchers {
+		if matcherIdx >= tokenCount {
+			return matcher.TokT == TokenUnit && matcherIdx == matcherCount-1 && !pattern.UnitReq
+		}
+
+		tok := tokens[matcherIdx]
+
+		if tok.Type != matcher.TokT {
+			return false
+		}
+
+		switch matcher.ValT {
+		case ValueFixed:
+			if tok.Value != matcher.Values[0] {
+				return false
+			}
+		case ValueOneOf:
+			if !slices.Contains(matcher.Values, tok.Value) {
+				return false
+			}
+		case ValueArbitrary:
+		}
+	}
+
+	return true
 }
 
