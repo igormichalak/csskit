@@ -56,7 +56,7 @@ digit     = '0' ... '9' .
 keyword   = letter, { letter } .
 number    = digit, { digit }, [ '.', digit, { digit } ] .
 unit      = 'px' | '%' | 'vw' | 'vh'
-          | 'deg' | 'rad' | 's' | 'ms' .
+          | 'rad' | 'deg' | 'ms' | 's' .
 className = keyword, { '-', keyword },
             [ '-', number, [ unit ] ] .
 ```
