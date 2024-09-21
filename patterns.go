@@ -57,7 +57,12 @@ var classPatterns = []ClassPattern{
 		UnitReq: false,
 		Generate: func(tokens []Token) ([]CSSProperty, error) {
 			num := tokens[2].Value
-			unit := tokens[3].Value
+
+			hasUnit := tokens[len(tokens)-1].Type == TokenUnit
+			unit := ""
+			if hasUnit {
+				unit = tokens[3].Value
+			}
 
 			props := []CSSProperty{
 				{Property: "width", Value: num + unit},
@@ -67,4 +72,3 @@ var classPatterns = []ClassPattern{
 		},
 	},
 }
-

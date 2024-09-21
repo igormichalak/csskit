@@ -162,7 +162,7 @@ func matchPattern(pattern *ClassPattern, tokens []Token) bool {
 		if lastTokenType == TokenUnit {
 			targetCount = matcherCount
 		} else {
-			targetCount = matcherCount-1
+			targetCount = matcherCount - 1
 		}
 		if targetCount != tokenCount {
 			return false
@@ -195,4 +195,3 @@ func matchPattern(pattern *ClassPattern, tokens []Token) bool {
 
 	return true
 }
-
