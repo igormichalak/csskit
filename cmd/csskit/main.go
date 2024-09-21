@@ -14,8 +14,10 @@ import (
 
 func main() {
 	var outFilepath string
+	var extractMode bool
 
-	flag.StringVar(&outFilepath, "out", "output.css", "output CSS filepath")
+	flag.StringVar(&outFilepath, "out", "output.css", "output CSS filepath.")
+	flag.BoolVar(&extractMode, "extracted", false, "only prints extracted tokens.")
 	flag.Parse()
 
 	sourceFilepaths := flag.Args()
@@ -74,31 +76,34 @@ func main() {
 		lexerInput = append(lexerInput, strs...)
 	}
 
-	for _, str := range lexerInput {
-		fmt.Printf("%q -> ", str)
+	if extractMode {
+		for _, str := range lexerInput {
+			fmt.Printf("%q -> ", str)
 
-		lex := csskit.NewLexer(str)
-		var tok csskit.Token
+			lex := csskit.NewLexer(str)
+			var tok csskit.Token
 
-		for tok.Type != csskit.TokenEOF {
-			tok = lex.NextToken()
+			for tok.Type != csskit.TokenEOF {
+				tok = lex.NextToken()
 
-			switch tok.Type {
-			case csskit.TokenKeyword:
-				fmt.Printf("KEYWORD(%s) ", tok.Value)
-			case csskit.TokenNumber:
-				fmt.Printf("NUMBER(%s) ", tok.Value)
-			case csskit.TokenUnit:
-				fmt.Printf("UNIT(%s) ", tok.Value)
-			case csskit.TokenHyphen:
-				fmt.Printf("HYPHEN ")
-			case csskit.TokenSpace:
-				fmt.Printf("SPACE ")
-			case csskit.TokenGarbage:
-				fmt.Printf("GARBAGE ")
-			case csskit.TokenEOF:
-				fmt.Printf("EOF\n")
+				switch tok.Type {
+				case csskit.TokenKeyword:
+					fmt.Printf("KEYWORD(%s) ", tok.Value)
+				case csskit.TokenNumber:
+					fmt.Printf("NUMBER(%s) ", tok.Value)
+				case csskit.TokenUnit:
+					fmt.Printf("UNIT(%s) ", tok.Value)
+				case csskit.TokenHyphen:
+					fmt.Printf("HYPHEN ")
+				case csskit.TokenSpace:
+					fmt.Printf("SPACE ")
+				case csskit.TokenGarbage:
+					fmt.Printf("GARBAGE ")
+				case csskit.TokenEOF:
+					fmt.Printf("EOF\n")
+				}
 			}
 		}
+		os.Exit(0)
 	}
 }
