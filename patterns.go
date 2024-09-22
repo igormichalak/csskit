@@ -39,10 +39,10 @@ func hyphenMatcher() TokenMatcher {
 	}
 }
 
-var classPatternsCount int
+var classPatternCount int
 
 func init() {
-	classPatternsCount = len(classPatterns)
+	classPatternCount = len(classPatterns)
 }
 
 var classPatterns = []ClassPattern{
@@ -62,6 +62,8 @@ var classPatterns = []ClassPattern{
 			unit := ""
 			if hasUnit {
 				unit = tokens[3].Value
+			} else {
+				unit = "rem"
 			}
 
 			props := []CSSProperty{

@@ -1,6 +1,9 @@
 package csskit
 
-import "unicode"
+import (
+	"fmt"
+	"unicode"
+)
 
 type TokenType int
 
@@ -27,6 +30,27 @@ type Lexer struct {
 	currChar rune
 	peekChar rune
 	prevTok  Token
+}
+
+func getTokenTypeName(tt TokenType) string {
+	switch tt {
+	case TokenKeyword:
+		return "keyword"
+	case TokenNumber:
+		return "number"
+	case TokenUnit:
+		return "unit"
+	case TokenHyphen:
+		return "hyphen"
+	case TokenSpace:
+		return "space"
+	case TokenGarbage:
+		return "garbage"
+	case TokenEOF:
+		return "EOF"
+	default:
+		panic(fmt.Errorf("unrecognized token type: %d", tt))
+	}
 }
 
 func NewLexer(input string) *Lexer {
@@ -66,6 +90,9 @@ func (l *Lexer) NextToken() Token {
 		case isDigit(l.currChar):
 			tok.Value = l.readNumber()
 			tok.Type = TokenNumber
+		case l.currChar == '%' && l.prevTok.Type == TokenNumber:
+			tok = Token{Type: TokenUnit, Value: "%"}
+			l.readChar()
 		case l.currChar == '-':
 			tok = Token{Type: TokenHyphen, Value: "-"}
 			l.readChar()
@@ -130,4 +157,3 @@ func isLowerLetter(c rune) bool {
 func isDigit(c rune) bool {
 	return '0' <= c && c <= '9'
 }
-

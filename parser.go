@@ -3,7 +3,6 @@ package csskit
 import (
 	"fmt"
 	"slices"
-	"strings"
 )
 
 type ValueType int
@@ -21,9 +20,9 @@ type TokenMatcher struct {
 	Values []string
 }
 
-type CSSClass struct {
-	Name  string
-	Props []CSSProperty
+type RawCSSClass struct {
+	Tokens []Token
+	Props  []CSSProperty
 }
 
 type CSSProperty struct {
@@ -39,8 +38,8 @@ func NewParser(lex *Lexer) *Parser {
 	return &Parser{lexer: lex}
 }
 
-func (p *Parser) Parse() ([]CSSClass, error) {
-	var classes []CSSClass
+func (p *Parser) Parse() ([]RawCSSClass, error) {
+	var classes []RawCSSClass
 
 	var tokens []Token
 	var prevTok Token
@@ -53,10 +52,9 @@ func (p *Parser) Parse() ([]CSSClass, error) {
 			if len(tokens) > 0 {
 				if collecting && isValidLastToken(prevTok) {
 					class, err := p.parseClass(tokens)
-					if err != nil {
-						return nil, err
+					if err == nil {
+						classes = append(classes, class)
 					}
-					classes = append(classes, class)
 				}
 			}
 			break
@@ -70,7 +68,7 @@ func (p *Parser) Parse() ([]CSSClass, error) {
 						classes = append(classes, class)
 					}
 				}
-				tokens = tokens[:0]
+				tokens = nil
 				prevTok = Token{}
 			}
 			collecting = true
@@ -121,30 +119,19 @@ func isValidLastToken(tok Token) bool {
 	}
 }
 
-func (p *Parser) parseClass(tokens []Token) (CSSClass, error) {
-	for i := 0; i < classPatternsCount; i++ {
+func (p *Parser) parseClass(tokens []Token) (RawCSSClass, error) {
+	for i := 0; i < classPatternCount; i++ {
 		pattern := &classPatterns[i]
 		if !matchPattern(pattern, tokens) {
 			continue
 		}
-		name, err := joinTokens(tokens)
+		props, err := pattern.Generate(tokens)
 		if err != nil {
-			return CSSClass{}, err
+			return RawCSSClass{}, fmt.Errorf("generation error: %v", err)
 		}
-		props, _ := pattern.Generate(tokens)
-		return CSSClass{Name: name, Props: props}, nil
+		return RawCSSClass{Tokens: tokens, Props: props}, nil
 	}
-	return CSSClass{}, fmt.Errorf("no matching pattern for tokens: %v", tokens)
-}
-
-func joinTokens(tokens []Token) (string, error) {
-	var sb strings.Builder
-	for _, tok := range tokens {
-		if _, err := sb.WriteString(tok.Value); err != nil {
-			return "", err
-		}
-	}
-	return sb.String(), nil
+	return RawCSSClass{}, fmt.Errorf("no matching pattern for tokens: %v", tokens)
 }
 
 func matchPattern(pattern *ClassPattern, tokens []Token) bool {
