@@ -43,7 +43,7 @@ More info: https://go.dev/wiki/GOPATH
 Only JavaScript, HTML and Go template files can be scanned for class names.
 
 ```bash
-csskit -o outfile.css infile1.js infile2.html ...
+csskit -out outfile.css infile1.js infile2.html ...
 ```
 
 Supported extensions: `.js`, `.html`, `.gohtml`.
