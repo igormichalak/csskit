@@ -32,7 +32,7 @@ type Lexer struct {
 	prevTok  Token
 }
 
-func getTokenTypeName(tt TokenType) string {
+func GetTokenTypeName(tt TokenType) string {
 	switch tt {
 	case TokenKeyword:
 		return "keyword"

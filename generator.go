@@ -20,15 +20,15 @@ var unitOrder = map[string]int{
 	"s":   7,
 }
 
-type ParsedToken struct {
+type parsedToken struct {
 	Type      TokenType
 	TextValue string
 	NumValue  float32
 }
 
-type CSSClass struct {
+type cssClass struct {
 	Name   string
-	Tokens []ParsedToken
+	Tokens []parsedToken
 	Props  []CSSProperty
 }
 
@@ -41,7 +41,7 @@ func GenerateCSS(w io.Writer, rcs []RawCSSClass) error {
 	}
 
 	classMap := make(map[string]struct{})
-	var classes []CSSClass
+	var classes []cssClass
 	for _, rc := range rcs {
 		key, err := getClassKey(rc.Tokens)
 		if err != nil {
@@ -91,7 +91,7 @@ func getClassKey(tokens []Token) (string, error) {
 	return sb.String(), nil
 }
 
-func compareClass(a, b CSSClass) int {
+func compareClass(a, b cssClass) int {
 	tokCountA := len(a.Tokens)
 	tokCountB := len(b.Tokens)
 	minTokCount := min(tokCountA, tokCountB)
@@ -150,8 +150,8 @@ func compareClass(a, b CSSClass) int {
 			return -1
 		}
 
-		typeNameA := getTokenTypeName(tokA.Type)
-		typeNameB := getTokenTypeName(tokB.Type)
+		typeNameA := GetTokenTypeName(tokA.Type)
+		typeNameB := GetTokenTypeName(tokB.Type)
 		err := fmt.Errorf("unexpected comparison between %q and	%q tokens", typeNameA, typeNameB)
 		panic(err)
 	}
@@ -196,36 +196,36 @@ func compareUnits(a, b string) int {
 	return 0
 }
 
-func parseCSSClass(rc RawCSSClass) (CSSClass, error) {
+func parseCSSClass(rc RawCSSClass) (cssClass, error) {
 	var sb strings.Builder
-	toks := make([]ParsedToken, len(rc.Tokens))
+	toks := make([]parsedToken, len(rc.Tokens))
 	props := slices.Clone(rc.Props)
 
 	for i, rtok := range rc.Tokens {
 		if _, err := sb.WriteString(rtok.Value); err != nil {
-			return CSSClass{}, err
+			return cssClass{}, err
 		}
 
-		tok := ParsedToken{Type: rtok.Type}
+		tok := parsedToken{Type: rtok.Type}
 		switch tok.Type {
 		case TokenKeyword, TokenUnit, TokenHyphen:
 			tok.TextValue = rtok.Value
 		case TokenNumber:
 			n, err := strconv.ParseFloat(rtok.Value, 32)
 			if err != nil {
-				return CSSClass{}, err
+				return cssClass{}, err
 			}
 			tok.NumValue = float32(n)
 		default:
-			typeName := getTokenTypeName(tok.Type)
+			typeName := GetTokenTypeName(tok.Type)
 			err := fmt.Errorf("unexpected token type: %s", typeName)
-			return CSSClass{}, err
+			return cssClass{}, err
 		}
 		toks[i] = tok
 	}
 
 	identifier := escapeIdentifier(sb.String())
-	return CSSClass{Name: identifier, Tokens: toks, Props: props}, nil
+	return cssClass{Name: identifier, Tokens: toks, Props: props}, nil
 }
 
 func escapeIdentifier(input string) string {
