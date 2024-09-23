@@ -36,6 +36,29 @@ var AllColorNames = []string{
 	ColorPink, ColorRose,
 }
 
+var shadeCount int
+
+func init() {
+	shadeCount = len(Shades)
+}
+
+var Shades = []int{50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950}
+
+func getClosestShades(num int) (int, int) {
+	if num <= Shades[0] {
+		return -1, -1
+	}
+	if num >= Shades[shadeCount-1] {
+		return -1, -1
+	}
+	for i := 0; i < shadeCount-1; i++ {
+		if num >= Shades[i] && num <= Shades[i+1] {
+			return Shades[i], Shades[i+1]
+		}
+	}
+	return -1, -1
+}
+
 var Colors = map[string]map[int]color.NRGBA{
 	ColorSlate: {
 		50:  color.NRGBA{R: 0xF8, G: 0xFA, B: 0xFC, A: 255},
