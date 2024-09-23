@@ -1,5 +1,44 @@
 package csskit
 
+import (
+	"fmt"
+	"strconv"
+)
+
+const (
+	ColorSlate   = "slate"
+	ColorGray    = "gray"
+	ColorZinc    = "zinc"
+	ColorNeutral = "neutral"
+	ColorStone   = "stone"
+	ColorRed     = "red"
+	ColorOrange  = "orange"
+	ColorAmber   = "amber"
+	ColorYellow  = "yellow"
+	ColorLime    = "lime"
+	ColorGreen   = "green"
+	ColorEmerald = "emerald"
+	ColorTeal    = "teal"
+	ColorCyan    = "cyan"
+	ColorSky     = "sky"
+	ColorBlue    = "blue"
+	ColorIndigo  = "indigo"
+	ColorViolet  = "violet"
+	ColorPurple  = "purple"
+	ColorFuchsia = "fuchsia"
+	ColorPink    = "pink"
+	ColorRose    = "rose"
+)
+
+var allColors = []string{
+	ColorSlate, ColorGray, ColorZinc, ColorNeutral,
+	ColorStone, ColorRed, ColorOrange, ColorAmber,
+	ColorYellow, ColorLime, ColorGreen, ColorEmerald,
+	ColorTeal, ColorCyan, ColorSky, ColorBlue,
+	ColorIndigo, ColorViolet, ColorPurple, ColorFuchsia,
+	ColorPink, ColorRose,
+}
+
 type ClassPattern struct {
 	Name     string
 	Matchers []TokenMatcher
@@ -39,6 +78,34 @@ func hyphenMatcher() TokenMatcher {
 	}
 }
 
+func colorMatcher() TokenMatcher {
+	return TokenMatcher{
+		TokT:   TokenKeyword,
+		ValT:   ValueOneOf,
+		Values: allColors,
+	}
+}
+
+func getSizeValue(tokens []Token) (string, error) {
+	tokenCount := len(tokens)
+	lastToken := tokens[tokenCount-1]
+
+	switch lastToken.Type {
+	case TokenUnit:
+		unit := lastToken.Value
+		num := tokens[tokenCount-2].Value
+		return num + unit, nil
+	case TokenNumber:
+		fl64, err := strconv.ParseFloat(lastToken.Value, 64)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%.4frem", fl64/4.0), nil
+	default:
+		panic(fmt.Errorf("number token expected: %v", tokens))
+	}
+}
+
 var classPatternCount int
 
 func init() {
@@ -47,7 +114,7 @@ func init() {
 
 var classPatterns = []ClassPattern{
 	{
-		Name: "width",
+		Name: "Width",
 		Matchers: []TokenMatcher{
 			literalMatcher("w"),
 			hyphenMatcher(),
@@ -56,21 +123,14 @@ var classPatterns = []ClassPattern{
 		},
 		UnitReq: false,
 		Generate: func(tokens []Token) ([]CSSProperty, error) {
-			num := tokens[2].Value
-
-			hasUnit := tokens[len(tokens)-1].Type == TokenUnit
-			unit := ""
-			if hasUnit {
-				unit = tokens[3].Value
-			} else {
-				unit = "rem"
+			val, err := getSizeValue(tokens)
+			if err != nil {
+				return nil, err
 			}
-
-			props := []CSSProperty{
-				{Property: "width", Value: num + unit},
-			}
-
-			return props, nil
+			return []CSSProperty{
+				{Property: "width", Value: val},
+			}, nil
 		},
 	},
 }
+
