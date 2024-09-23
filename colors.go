@@ -1,6 +1,9 @@
 package csskit
 
-import "image/color"
+import (
+	"fmt"
+	"image/color"
+)
 
 const (
 	ColorSlate   = "slate"
@@ -57,6 +60,30 @@ func getClosestShades(num int) (int, int) {
 		}
 	}
 	return -1, -1
+}
+
+func interpolateNRGBA(a, b color.NRGBA, t float64) color.NRGBA {
+	return color.NRGBA{
+		R: uint8(float64(a.R)*(1-t) + float64(b.R)*t),
+		G: uint8(float64(a.G)*(1-t) + float64(b.G)*t),
+		B: uint8(float64(a.B)*(1-t) + float64(b.B)*t),
+		A: uint8(float64(a.A)*(1-t) + float64(b.A)*t),
+	}
+}
+
+func getColor(name string, shade float64) color.NRGBA {
+	prevShade, nextShade := getClosestShades(int(shade))
+	if prevShade == -1 || nextShade == -1 {
+		panic(fmt.Errorf("color shade out of bounds (50-950): %f", shade))
+	}
+	shadeMap, ok := Colors[name]
+	if !ok {
+		panic(fmt.Errorf("unknown color name: %s", name))
+	}
+	prevColor := shadeMap[prevShade]
+	nextColor := shadeMap[nextShade]
+	mixf := (shade - float64(prevShade)) / float64(nextShade - prevShade)
+	return interpolateNRGBA(prevColor, nextColor, mixf)
 }
 
 var Colors = map[string]map[int]color.NRGBA{
@@ -347,4 +374,3 @@ var Colors = map[string]map[int]color.NRGBA{
 		950: color.NRGBA{R: 0x4C, G: 0x05, B: 0x19, A: 255},
 	},
 }
-
